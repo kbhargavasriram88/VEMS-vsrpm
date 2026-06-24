@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1E3A8A" />
+    <meta name="description" content="Vivekananda E.M High School - Empowering students to achieve excellence in education, character, and lifelong learning." />
+    <meta name="keywords" content="School, Education, Vivekananda High School, Admissions, Academics" />
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Vivekananda E.M High School" />
+    <meta property="og:description" content="Empowering students to achieve excellence in education." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://vivekanandaschool.example.com" />
+    
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    
+    <title>Vivekananda E.M High School</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js').then(registration => {
+            console.log('SW registered: ', registration);
+          }).catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
