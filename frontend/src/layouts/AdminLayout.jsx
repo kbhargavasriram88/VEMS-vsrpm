@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
   FaTachometerAlt, FaUserGraduate, FaUsers, FaImages, FaRegNewspaper, 
-  FaCalendarAlt, FaEnvelope, FaCog, FaAngleDown, FaSignOutAlt, FaSun, FaMoon, FaHome, FaInfoCircle, FaBook
+  FaCalendarAlt, FaEnvelope, FaCog, FaAngleDown, FaSignOutAlt, FaSun, FaMoon, FaHome, FaInfoCircle, FaBook, FaBars, FaTimes
 } from 'react-icons/fa';
 import api from '../services/api';
 
@@ -12,11 +12,13 @@ const AdminLayout = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('theme') !== 'light';
   });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [profile, setProfile] = useState({
     username: 'Admin User',
     email: '',
     avatarUrl: ''
   });
+  const [schoolLogoUrl, setSchoolLogoUrl] = useState('https://res.cloudinary.com/dcsngtknz/image/upload/v1781580525/IMG-20260616-WA0000_ckiv3k.jpg');
 
   const fetchProfile = async () => {
     try {
@@ -48,6 +50,22 @@ const AdminLayout = () => {
     return () => {
       window.removeEventListener('admin-profile-updated', handleProfileUpdate);
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data } = await api.get('/general-settings');
+        if (data && data.schoolLogoUrl) {
+          setSchoolLogoUrl(data.schoolLogoUrl);
+        }
+      } catch (e) {
+        console.error('Error fetching admin layout settings:', e);
+      }
+    };
+    fetchSettings();
+    window.addEventListener('school-settings-updated', fetchSettings);
+    return () => window.removeEventListener('school-settings-updated', fetchSettings);
   }, []);
 
   useEffect(() => {
@@ -93,14 +111,24 @@ const AdminLayout = () => {
   return (
     <div className="flex h-screen bg-[#0A1128] text-white font-sans overflow-hidden">
       
+      {/* Sidebar Overlay for Mobile */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-[#0A1128] border-r border-white/5 flex flex-col flex-shrink-0">
+      <aside className={`fixed md:relative z-50 w-64 h-full bg-[#0A1128] border-r border-white/5 flex flex-col flex-shrink-0 transition-transform duration-300 ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      }`}>
         
         {/* Brand */}
-        <div className="h-20 flex items-center px-6 border-b border-white/5 py-4">
+        <div className="h-20 flex items-center justify-between px-6 border-b border-white/5 py-4">
           <Link to="/" className="flex items-center gap-3 font-bold tracking-tight text-white" title="Go to Website">
             <img 
-              src="https://res.cloudinary.com/dcsngtknz/image/upload/v1781580525/IMG-20260616-WA0000_ckiv3k.jpg" 
+              src={schoolLogoUrl} 
               alt="VEMS Logo" 
               className="h-12 w-auto object-contain rounded-full bg-white/10 p-1 transition-all" 
             />
@@ -109,6 +137,12 @@ const AdminLayout = () => {
               <span className="text-[10px] text-textSecondary font-bold tracking-widest uppercase mt-0.5">Admin Portal</span>
             </div>
           </Link>
+          <button 
+            className="md:hidden text-white/70 hover:text-white"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <FaTimes size={18} />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -122,6 +156,7 @@ const AdminLayout = () => {
               <NavLink
                 key={item.name}
                 to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   isActive 
                     ? 'bg-blue-600 text-white' 
@@ -174,7 +209,22 @@ const AdminLayout = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#0A1128]">
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+        
+        {/* Mobile Header Toggle */}
+        <div className="md:hidden flex items-center justify-between p-4 border-b border-white/5 bg-[#0A1128]">
+          <div className="flex items-center gap-3">
+             <img src={schoolLogoUrl} alt="Logo" className="h-8 w-auto object-contain rounded-full bg-white/10 p-1" />
+             <span className="font-bold text-sm text-white"><span className="text-accentGold">Vivekananda</span> Admin</span>
+          </div>
+          <button 
+            onClick={() => setIsMobileMenuOpen(true)} 
+            className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors border border-white/10"
+          >
+            <FaBars size={18} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6">
           <Outlet />
         </div>
       </main>

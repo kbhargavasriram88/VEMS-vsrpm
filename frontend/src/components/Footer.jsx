@@ -16,7 +16,8 @@ const Footer = () => {
   const [general, setGeneral] = useState({
     address: '123 Education Lane, Knowledge City, ST 12345',
     phone: '+1 (555) 123-4567',
-    email: 'info@vivekanandaschool.com'
+    email: 'info@vivekanandaschool.com',
+    schoolLogoUrl: 'https://res.cloudinary.com/dcsngtknz/image/upload/v1781580525/IMG-20260616-WA0000_ckiv3k.jpg'
   });
 
   useEffect(() => {
@@ -30,7 +31,8 @@ const Footer = () => {
           setGeneral({
             address: data.address || general.address,
             phone: data.phone || general.phone,
-            email: data.email || general.email
+            email: data.email || general.email,
+            schoolLogoUrl: data.schoolLogoUrl || general.schoolLogoUrl
           });
         }
       } catch (e) {
@@ -49,7 +51,7 @@ const Footer = () => {
         
         <div>
           <Link to="/" className="flex items-center gap-3 font-bold text-xl tracking-tight text-white mb-4">
-            <img src="https://res.cloudinary.com/dcsngtknz/image/upload/v1781580525/IMG-20260616-WA0000_ckiv3k.jpg" alt="VEMS Logo" className="h-10 w-auto object-contain rounded-full bg-white/10 p-1" />
+            <img src={general.schoolLogoUrl} alt="VEMS Logo" className="h-10 w-auto object-contain rounded-full bg-white/10 p-1" />
             <span><span className="text-accentGold">Vivekananda</span> School</span>
           </Link>
           <p className="mb-4 leading-relaxed">

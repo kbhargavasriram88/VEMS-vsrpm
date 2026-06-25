@@ -9,7 +9,28 @@ const gallerySchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['Infrastructure', 'Events', 'Academics', 'Sports', 'Other']
+    enum: [
+      'Academic Excellence',
+      'School Achievements',
+      'Awards & Recognition',
+      'Science & Innovation',
+      'Competitions',
+      'Cultural Activities',
+      'Annual Day Celebrations',
+      'Sports Events',
+      'Environmental Activities',
+      'Educational Tours',
+      'Seminars & Workshops',
+      'Community Service',
+      'Media Coverage',
+      'Guest Visits',
+      'Campus Life',
+      'Infrastructure',
+      'Admissions',
+      'Faculty & Staff',
+      'Student Activities',
+      'Special Events'
+    ]
   },
   imageUrl: {
     type: String,
@@ -18,6 +39,10 @@ const gallerySchema = new mongoose.Schema({
   publicId: {
     type: String,
     required: true // used to delete from Cloudinary
+  },
+  sortOrder: {
+    type: Number,
+    default: 0
   }
 }, { timestamps: true });
 

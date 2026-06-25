@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const homeSettingsSchema = new mongoose.Schema({
   heroBackgroundImage: { type: String, default: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1920&q=80' },
+  heroContent: {
+    eyebrow: { type: String, default: "© Nurturing Minds, Building Futures" },
+    heading: { type: String, default: "Welcome to <br /> Vivekananda <br /> E.M High School" },
+    subtitle: { type: String, default: "Empowering students with quality education, values, and leadership skills to excel in a dynamic world." }
+  },
   heroStats: {
     studentsCount: { type: String, default: "1500+" },
     staffCount: { type: String, default: "100+" },

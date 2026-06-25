@@ -78,6 +78,7 @@ const updateHomeSettings = async (req, res) => {
       settings = new HomeSettings(req.body);
     } else {
       settings.heroBackgroundImage = req.body.heroBackgroundImage || settings.heroBackgroundImage;
+      settings.heroContent = req.body.heroContent || settings.heroContent;
       settings.heroStats = req.body.heroStats || settings.heroStats;
       settings.achievements = req.body.achievements || settings.achievements;
       settings.principalMessage = req.body.principalMessage || settings.principalMessage;

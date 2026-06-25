@@ -43,7 +43,7 @@ const WelcomeModal = ({ settings }) => {
         </button>
 
         {/* Image Section */}
-        <div className="w-full h-64 md:h-[50vh] bg-black relative overflow-hidden flex-shrink-0">
+        <div className="w-full h-40 sm:h-64 md:h-[50vh] bg-black relative overflow-hidden shrink-0">
           <img 
             src={currentAnnounce?.imageUrl || currentAnnounce?.image} 
             alt={currentAnnounce?.title} 
@@ -52,29 +52,29 @@ const WelcomeModal = ({ settings }) => {
         </div>
 
         {/* Content Section */}
-        <div className="w-full p-6 md:p-8 flex flex-col items-center justify-center relative bg-darkCard overflow-y-auto text-center">
+        <div className="w-full p-5 sm:p-6 md:p-8 flex flex-col items-center justify-start relative bg-darkCard overflow-y-auto text-center flex-1 min-h-0">
           
           {currentAnnounce?.title && (
-            <h2 className="font-bold text-white leading-tight text-2xl md:text-3xl mb-4">
+            <h2 className="font-bold text-white leading-tight text-xl sm:text-2xl md:text-3xl mb-2 sm:mb-4 mt-2">
               {currentAnnounce.title}
             </h2>
           )}
           
           {currentAnnounce?.description && currentAnnounce.description.trim() !== '' && (
-            <p className="text-textSecondary text-lg md:text-xl leading-relaxed mb-8">
+            <p className="text-textSecondary text-sm sm:text-lg md:text-xl leading-relaxed mb-4 sm:mb-8">
               {currentAnnounce.description}
             </p>
           )}
           
           {/* Controls */}
           {announcements.length > 1 && (
-            <div className="flex items-center justify-between w-full mt-auto pt-4 border-t border-white/5">
-              <div className="flex gap-3">
-                <button onClick={prevSlide} className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all">
-                  <FaChevronLeft size={16} />
+            <div className="flex items-center justify-between w-full mt-auto pt-3 sm:pt-4 border-t border-white/5">
+              <div className="flex gap-2 sm:gap-3">
+                <button onClick={prevSlide} className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all">
+                  <FaChevronLeft size={14} />
                 </button>
-                <button onClick={nextSlide} className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all">
-                  <FaChevronRight size={16} />
+                <button onClick={nextSlide} className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all">
+                  <FaChevronRight size={14} />
                 </button>
               </div>
               <div className="flex gap-2">

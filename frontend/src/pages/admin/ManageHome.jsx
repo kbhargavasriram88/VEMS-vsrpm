@@ -28,6 +28,7 @@ const ManageHome = () => {
   
   const [formData, setFormData] = useState({
     heroBackgroundImage: '',
+    heroContent: { eyebrow: '', heading: '', subtitle: '' },
     heroStats: { studentsCount: '', staffCount: '', yearsExcellence: '' },
     achievements: { students: '', teachers: '', classrooms: '', awards: '' },
     principalMessage: { name: '', designation: '', text1: '', text2: '', signature: '', imageUrl: '' },
@@ -325,6 +326,40 @@ const ManageHome = () => {
                     </div>
                     <p className="text-[10px] text-textSecondary">PNG, JPG or WEBP. Max size 2MB (1920x1080 recommended)</p>
                   </div>
+                </div>
+              </div>
+
+              <h2 className="text-base font-bold text-white border-b border-white/5 pb-2 mt-4">Hero Text Content</h2>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-textSecondary uppercase">Eyebrow Text</label>
+                  <input 
+                    type="text" 
+                    value={formData.heroContent?.eyebrow || ''} 
+                    onChange={e => handleTextChange('heroContent', 'eyebrow', e.target.value)}
+                    placeholder="e.g. © Nurturing Minds, Building Futures"
+                    className="bg-[#0A1128] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-blue-600 outline-none transition-colors w-full"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-textSecondary uppercase">Main Heading (Use &lt;br/&gt; for new lines)</label>
+                  <input 
+                    type="text" 
+                    value={formData.heroContent?.heading || ''} 
+                    onChange={e => handleTextChange('heroContent', 'heading', e.target.value)}
+                    placeholder="e.g. Welcome to <br/> Vivekananda <br/> High School"
+                    className="bg-[#0A1128] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-blue-600 outline-none transition-colors w-full"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-textSecondary uppercase">Subtitle</label>
+                  <textarea 
+                    rows="2"
+                    value={formData.heroContent?.subtitle || ''} 
+                    onChange={e => handleTextChange('heroContent', 'subtitle', e.target.value)}
+                    placeholder="e.g. Empowering students with quality education..."
+                    className="bg-[#0A1128] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-blue-600 outline-none transition-colors w-full resize-none"
+                  />
                 </div>
               </div>
 

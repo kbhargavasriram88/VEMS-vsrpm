@@ -136,6 +136,33 @@ const ManageSettings = () => {
     }
   };
 
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const uploadData = new FormData();
+    uploadData.append('image', file);
+    
+    setUploading(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+    try {
+      const { data } = await api.post('/home-settings/upload-image', uploadData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setGeneral(prev => ({
+        ...prev,
+        schoolLogoUrl: data.imageUrl
+      }));
+      setSuccessMsg('School logo uploaded successfully! Click save to apply.');
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Failed to upload school logo.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -477,6 +504,32 @@ const ManageSettings = () => {
           </div>
 
           <form onSubmit={handleSaveGeneral} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2 sm:col-span-2 border-b border-white/5 pb-4 mb-2">
+              <label className="text-xs font-bold text-textSecondary uppercase">School Logo</label>
+              <div className="flex items-center gap-6">
+                <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-2 overflow-hidden shadow-lg shrink-0">
+                  <img 
+                    src={general.schoolLogoUrl || 'https://res.cloudinary.com/dcsngtknz/image/upload/v1781580525/IMG-20260616-WA0000_ckiv3k.jpg'} 
+                    alt="School Logo" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors shadow-blue-500/20 shadow-lg w-fit">
+                    Upload New Logo
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={handleLogoUpload}
+                      disabled={uploading}
+                    />
+                  </label>
+                  <p className="text-[10px] text-textSecondary">PNG, JPG or WEBP. Max size 2MB.</p>
+                </div>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-textSecondary uppercase">School Name</label>
               <div className="relative">
@@ -534,6 +587,21 @@ const ManageSettings = () => {
                   className="w-full bg-[#0A1128] border border-white/10 rounded-lg pl-10 pr-4 py-3 text-sm text-white focus:border-blue-500 outline-none transition-colors" 
                 />
                 <FaClock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-textSecondary text-sm" />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold text-textSecondary uppercase">WhatsApp Number</label>
+              <div className="relative">
+                <input 
+                  type="text" 
+                  name="whatsappNumber"
+                  value={general.whatsappNumber || ''}
+                  onChange={handleGeneralChange}
+                  placeholder="e.g. 1234567890 (no + or spaces)"
+                  className="w-full bg-[#0A1128] border border-white/10 rounded-lg pl-10 pr-4 py-3 text-sm text-white focus:border-blue-500 outline-none transition-colors" 
+                />
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-textSecondary text-sm font-bold">WA</span>
               </div>
             </div>
 

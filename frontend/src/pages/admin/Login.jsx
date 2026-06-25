@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaLock, FaSignInAlt, FaSpinner, FaSchool, FaEye, FaEyeSlash } from 'react-icons/fa';
 import api from '../../services/api';
@@ -9,7 +9,22 @@ const Login = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [schoolLogoUrl, setSchoolLogoUrl] = useState('https://res.cloudinary.com/dcsngtknz/image/upload/v1781580525/IMG-20260616-WA0000_ckiv3k.jpg');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data } = await api.get('/general-settings');
+        if (data && data.schoolLogoUrl) {
+          setSchoolLogoUrl(data.schoolLogoUrl);
+        }
+      } catch (e) {
+        console.error('Error fetching login layout settings:', e);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -41,7 +56,7 @@ const Login = () => {
         {/* Brand Header */}
         <div className="flex flex-col items-center gap-2.5 text-center">
           <div className="w-16 h-16 rounded-full overflow-hidden bg-white/10 p-1 mb-1 shadow-lg border border-white/5">
-            <img src="https://res.cloudinary.com/dcsngtknz/image/upload/v1781580525/IMG-20260616-WA0000_ckiv3k.jpg" alt="VEMS Logo" className="w-full h-full object-contain rounded-full" />
+            <img src={schoolLogoUrl} alt="VEMS Logo" className="w-full h-full object-contain rounded-full" />
           </div>
           <div>
             <h2 className="text-lg font-black tracking-wide uppercase text-white">VIVEKANANDA</h2>

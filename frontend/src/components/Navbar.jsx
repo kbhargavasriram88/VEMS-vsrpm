@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaBars, FaTimes, FaSun, FaMoon } from 'react-icons/fa';
+import api from '../services/api';
 
 const Navbar = () => {
+  const [schoolLogoUrl, setSchoolLogoUrl] = useState('https://res.cloudinary.com/dcsngtknz/image/upload/v1781580525/IMG-20260616-WA0000_ckiv3k.jpg');
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -16,6 +18,22 @@ const Navbar = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data } = await api.get('/general-settings');
+        if (data && data.schoolLogoUrl) {
+          setSchoolLogoUrl(data.schoolLogoUrl);
+        }
+      } catch (e) {
+        console.error('Error fetching navbar settings:', e);
+      }
+    };
+    fetchSettings();
+    window.addEventListener('school-settings-updated', fetchSettings);
+    return () => window.removeEventListener('school-settings-updated', fetchSettings);
   }, []);
 
   useEffect(() => {
@@ -45,11 +63,11 @@ const Navbar = () => {
     <nav className={`sticky top-0 z-50 bg-darkBg/80 backdrop-blur-md border-b border-white/5 px-6 md:px-12 flex items-center justify-between transition-all duration-300 ${
       isScrolled ? 'py-4 shadow-md' : 'py-6'
     }`}>
-      <Link to="/" className="flex items-center gap-3 font-bold text-2xl tracking-tight text-white">
-        <img src="https://res.cloudinary.com/dcsngtknz/image/upload/v1781580525/IMG-20260616-WA0000_ckiv3k.jpg" alt="VEMS Logo" className={`w-auto object-contain rounded-full bg-white/10 p-1 transition-all duration-300 ${
-          isScrolled ? 'h-12' : 'h-16'
+      <Link to="/" className="flex items-center gap-2 sm:gap-3 font-bold text-lg sm:text-2xl tracking-tight text-white">
+        <img src={schoolLogoUrl} alt="VEMS Logo" className={`w-auto object-contain rounded-full bg-white/10 p-1 transition-all duration-300 ${
+          isScrolled ? 'h-10 sm:h-12' : 'h-12 sm:h-16'
         }`} />
-        <span className="hidden sm:inline"><span className="text-accentGold">Vivekananda</span> School</span>
+        <span><span className="text-accentGold">Vivekananda</span> School</span>
       </Link>
 
       <div className="flex items-center gap-6">

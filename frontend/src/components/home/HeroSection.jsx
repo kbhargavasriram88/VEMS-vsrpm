@@ -13,12 +13,15 @@ const HeroSection = ({ currentSettings }) => {
       </div>
       
       <div className="max-w-7xl mx-auto px-6 md:px-12 w-full relative z-10 flex flex-col items-start mt-10">
-        <span className="text-accentGold font-bold tracking-widest text-xs mb-4 uppercase">© Nurturing Minds, Building Futures</span>
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 max-w-2xl">
-          Welcome to <br /> Vivekananda <br /> E.M High School
-        </h1>
+        <span className="text-accentGold font-bold tracking-widest text-xs mb-4 uppercase">
+          {currentSettings?.heroContent?.eyebrow || "© Nurturing Minds, Building Futures"}
+        </span>
+        <h1 
+          className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 max-w-2xl"
+          dangerouslySetInnerHTML={{ __html: currentSettings?.heroContent?.heading || "Welcome to <br /> Vivekananda <br /> E.M High School" }}
+        />
         <p className="text-textSecondary max-w-xl text-lg mb-10 leading-relaxed">
-          Empowering students with quality education, values, and leadership skills to excel in a dynamic world.
+          {currentSettings?.heroContent?.subtitle || "Empowering students with quality education, values, and leadership skills to excel in a dynamic world."}
         </p>
         <div className="flex flex-wrap gap-4">
           <Link to="/admissions" className="bg-accentGold text-darkBg font-bold px-8 py-3 rounded hover:bg-accentGoldDark transition-colors">

@@ -9,6 +9,7 @@ import WelcomeModal from '../components/home/WelcomeModal';
 const MainLayout = () => {
   const [isMaintenance, setIsMaintenance] = useState(false);
   const [welcomeModalSettings, setWelcomeModalSettings] = useState(null);
+  const [whatsappNumber, setWhatsappNumber] = useState('1234567890');
 
   useEffect(() => {
     const checkSettings = async () => {
@@ -18,8 +19,19 @@ const MainLayout = () => {
           api.get('/home-settings').catch(() => ({ data: {} }))
         ]);
         
-        if (genRes.data && genRes.data.maintenanceMode !== undefined) {
-          setIsMaintenance(genRes.data.maintenanceMode);
+        if (genRes.data) {
+          if (genRes.data.maintenanceMode !== undefined) {
+            setIsMaintenance(genRes.data.maintenanceMode);
+          }
+          if (genRes.data.whatsappNumber) {
+            setWhatsappNumber(genRes.data.whatsappNumber);
+          }
+          if (genRes.data.schoolLogoUrl) {
+            const favicon = document.querySelector('link[rel="icon"]');
+            const appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+            if (favicon) favicon.href = genRes.data.schoolLogoUrl;
+            if (appleIcon) appleIcon.href = genRes.data.schoolLogoUrl;
+          }
         }
 
         if (homeRes.data && homeRes.data.welcomeModal) {
@@ -77,13 +89,13 @@ const MainLayout = () => {
 
       {/* Floating WhatsApp Widget */}
       <a 
-        href="https://wa.me/1234567890" 
+        href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`} 
         target="_blank" 
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 bg-whatsappGreen text-white p-4 rounded-full shadow-greenGlow hover:scale-110 transition-transform duration-300 cursor-pointer"
+        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 bg-whatsappGreen text-white p-3 sm:p-4 rounded-full shadow-greenGlow hover:scale-110 transition-transform duration-300 cursor-pointer"
         aria-label="Chat with us on WhatsApp"
       >
-        <FaWhatsapp size={28} />
+        <FaWhatsapp className="text-2xl sm:text-[28px]" />
       </a>
     </div>
   );

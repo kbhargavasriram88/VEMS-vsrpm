@@ -28,4 +28,31 @@ const updateGeneralSettings = async (req, res) => {
   }
 };
 
-module.exports = { getGeneralSettings, updateGeneralSettings };
+const getManifest = async (req, res) => {
+  try {
+    const settings = await GeneralSettings.findOne();
+    const logoUrl = settings?.schoolLogoUrl || '/vite.svg';
+    const schoolName = settings?.schoolName || 'Vivekananda E.M High School';
+    
+    res.json({
+      "short_name": "VEMS",
+      "name": schoolName,
+      "icons": [
+        {
+          "src": logoUrl,
+          "sizes": "192x192 512x512",
+          "type": "image/png",
+          "purpose": "any maskable"
+        }
+      ],
+      "start_url": "/",
+      "display": "standalone",
+      "theme_color": "#1E3A8A",
+      "background_color": "#0A1128"
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error generating manifest' });
+  }
+};
+
+module.exports = { getGeneralSettings, updateGeneralSettings, getManifest };

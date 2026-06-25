@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaCloudUploadAlt, FaTimes, FaCamera, FaSpinner, FaImage, FaTrash } from 'react-icons/fa';
+import { FaCloudUploadAlt, FaTimes, FaCamera, FaSpinner, FaImage, FaTrash, FaEdit } from 'react-icons/fa';
 import api from '../../services/api';
 
 const ManageGallery = () => {
@@ -8,8 +8,10 @@ const ManageGallery = () => {
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
-    category: 'Infrastructure',
+    category: 'Academic Excellence',
+    sortOrder: 0,
   });
+  const [editingId, setEditingId] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
@@ -98,7 +100,7 @@ const ManageGallery = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!imageFile) {
+    if (!editingId && !imageFile) {
       alert('Please select an image to upload.');
       return;
     }
@@ -108,25 +110,52 @@ const ManageGallery = () => {
       const data = new FormData();
       data.append('title', formData.title);
       data.append('category', formData.category);
-      data.append('image', imageFile);
+      data.append('sortOrder', formData.sortOrder);
+      if (imageFile) {
+        data.append('image', imageFile);
+      }
 
-      const response = await api.post('/gallery', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      let response;
+      if (editingId) {
+        response = await api.put(`/gallery/${editingId}`, data, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        setPhotos(photos.map(p => p._id === editingId ? response.data : p).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || new Date(b.createdAt) - new Date(a.createdAt)));
+        alert('Image updated successfully!');
+      } else {
+        response = await api.post('/gallery', data, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        setPhotos([...photos, response.data].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || new Date(b.createdAt) - new Date(a.createdAt)));
+        alert('Image added to gallery successfully!');
+      }
 
-      setPhotos([response.data, ...photos]);
-      setFormData({ title: '', category: 'Infrastructure' });
-      setImageFile(null);
-      setImagePreview('');
-      alert('Image added to gallery successfully!');
+      cancelEdit();
     } catch (error) {
       console.error(error);
-      alert('Failed to upload image: ' + (error.response?.data?.message || error.message));
+      alert('Failed to save image: ' + (error.response?.data?.message || error.message));
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleEditClick = (photo) => {
+    setEditingId(photo._id);
+    setFormData({
+      title: photo.title,
+      category: photo.category,
+      sortOrder: photo.sortOrder || 0,
+    });
+    setImagePreview(photo.imageUrl);
+    setImageFile(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setFormData({ title: '', category: 'Academic Excellence', sortOrder: 0 });
+    setImageFile(null);
+    setImagePreview('');
   };
 
   const handleDelete = async (id) => {
@@ -253,7 +282,7 @@ const ManageGallery = () => {
             <div className="p-2 rounded bg-green-500 text-white border border-green-600 dark:bg-green-950 dark:text-green-500 dark:border-green-500/10">
               <FaCloudUploadAlt size={14} />
             </div>
-            <h2 className="text-base font-bold">Upload New Photo</h2>
+            <h2 className="text-base font-bold">{editingId ? 'Edit Photo' : 'Upload New Photo'}</h2>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -276,12 +305,39 @@ const ManageGallery = () => {
                 value={formData.category} 
                 onChange={e => setFormData({...formData, category: e.target.value})} 
               >
+                <option value="Academic Excellence">Academic Excellence</option>
+                <option value="School Achievements">School Achievements</option>
+                <option value="Awards & Recognition">Awards & Recognition</option>
+                <option value="Science & Innovation">Science & Innovation</option>
+                <option value="Competitions">Competitions</option>
+                <option value="Cultural Activities">Cultural Activities</option>
+                <option value="Annual Day Celebrations">Annual Day Celebrations</option>
+                <option value="Sports Events">Sports Events</option>
+                <option value="Environmental Activities">Environmental Activities</option>
+                <option value="Educational Tours">Educational Tours</option>
+                <option value="Seminars & Workshops">Seminars & Workshops</option>
+                <option value="Community Service">Community Service</option>
+                <option value="Media Coverage">Media Coverage</option>
+                <option value="Guest Visits">Guest Visits</option>
+                <option value="Campus Life">Campus Life</option>
                 <option value="Infrastructure">Infrastructure</option>
-                <option value="Events">Events</option>
-                <option value="Academics">Academics</option>
-                <option value="Sports">Sports</option>
-                <option value="Other">Other</option>
+                <option value="Admissions">Admissions</option>
+                <option value="Faculty & Staff">Faculty & Staff</option>
+                <option value="Student Activities">Student Activities</option>
+                <option value="Special Events">Special Events</option>
               </select>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold text-textSecondary uppercase">Display Order (0 is first) <span className="text-red-500">*</span></label>
+              <input 
+                type="number" 
+                min="0"
+                required 
+                className="bg-[#0A1128] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-blue-600 outline-none transition-colors w-full" 
+                value={formData.sortOrder} 
+                onChange={e => setFormData({...formData, sortOrder: e.target.value})} 
+              />
             </div>
 
             {/* Select Image */}
@@ -319,21 +375,34 @@ const ManageGallery = () => {
               </div>
             </div>
 
-            <button 
-              type="submit" 
-              disabled={submitting}
-              className="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-sm font-bold transition-all w-full flex items-center justify-center gap-2 mt-2 shadow-lg shadow-blue-500/10"
-            >
-              {submitting ? (
-                <>
-                  <FaSpinner className="animate-spin" /> Uploading image...
-                </>
-              ) : (
-                <>
-                  <FaCloudUploadAlt /> Upload to Gallery
-                </>
+            <div className="flex flex-col gap-2 mt-2">
+              <button 
+                type="submit" 
+                disabled={submitting}
+                className="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-sm font-bold transition-all w-full flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10"
+              >
+                {submitting ? (
+                  <>
+                    <FaSpinner className="animate-spin" /> Saving...
+                  </>
+                ) : (
+                  <>
+                    <FaCloudUploadAlt /> {editingId ? 'Update Photo' : 'Upload to Gallery'}
+                  </>
+                )}
+              </button>
+              
+              {editingId && (
+                <button 
+                  type="button" 
+                  onClick={cancelEdit}
+                  disabled={submitting}
+                  className="bg-white/5 hover:bg-white/10 text-white py-3 rounded-lg text-sm font-bold transition-all w-full flex items-center justify-center gap-2 border border-white/10"
+                >
+                  <FaTimes /> Cancel Edit
+                </button>
               )}
-            </button>
+            </div>
           </form>
         </div>
 
@@ -354,11 +423,26 @@ const ManageGallery = () => {
               className="bg-[#0A1128] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:border-blue-600 outline-none"
             >
               <option value="All">All Categories</option>
+              <option value="Academic Excellence">Academic Excellence</option>
+              <option value="School Achievements">School Achievements</option>
+              <option value="Awards & Recognition">Awards & Recognition</option>
+              <option value="Science & Innovation">Science & Innovation</option>
+              <option value="Competitions">Competitions</option>
+              <option value="Cultural Activities">Cultural Activities</option>
+              <option value="Annual Day Celebrations">Annual Day Celebrations</option>
+              <option value="Sports Events">Sports Events</option>
+              <option value="Environmental Activities">Environmental Activities</option>
+              <option value="Educational Tours">Educational Tours</option>
+              <option value="Seminars & Workshops">Seminars & Workshops</option>
+              <option value="Community Service">Community Service</option>
+              <option value="Media Coverage">Media Coverage</option>
+              <option value="Guest Visits">Guest Visits</option>
+              <option value="Campus Life">Campus Life</option>
               <option value="Infrastructure">Infrastructure</option>
-              <option value="Events">Events</option>
-              <option value="Academics">Academics</option>
-              <option value="Sports">Sports</option>
-              <option value="Other">Other</option>
+              <option value="Admissions">Admissions</option>
+              <option value="Faculty & Staff">Faculty & Staff</option>
+              <option value="Student Activities">Student Activities</option>
+              <option value="Special Events">Special Events</option>
             </select>
           </div>
 
@@ -383,17 +467,31 @@ const ManageGallery = () => {
                   <span className="absolute top-2 left-2 text-[10px] font-bold bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded text-white border border-white/10">
                     {photo.category}
                   </span>
+                  
+                  {/* Order Badge */}
+                  <span className="absolute top-2 right-2 text-[10px] font-bold bg-blue-600/80 backdrop-blur-sm px-2 py-0.5 rounded text-white border border-blue-500/20">
+                    Order: {photo.sortOrder || 0}
+                  </span>
  
-                  {/* Caption & Delete Overlay */}
+                  {/* Caption & Edit/Delete Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5">
                     <p className="text-xs font-semibold text-white truncate mb-1.5">{photo.title}</p>
-                    <button 
-                      onClick={() => handleDelete(photo._id)}
-                      className="w-full py-1 rounded bg-red-500 hover:bg-red-600 text-white hover:text-white dark:bg-red-950/40 dark:text-red-500 dark:hover:bg-red-600 dark:border-red-500/10 transition-all text-xs font-bold flex items-center justify-center gap-1 border border-red-600"
-                      title="Delete Image"
-                    >
-                      <FaTrash size={8} /> Delete Photo
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button 
+                        onClick={() => handleEditClick(photo)}
+                        className="flex-1 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold flex items-center justify-center gap-1 transition-all"
+                        title="Edit Image"
+                      >
+                        <FaEdit size={8} /> Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(photo._id)}
+                        className="flex-1 py-1 rounded bg-red-500 hover:bg-red-600 text-white hover:text-white dark:bg-red-950/40 dark:text-red-500 dark:hover:bg-red-600 dark:border-red-500/10 transition-all text-xs font-bold flex items-center justify-center gap-1 border border-red-600"
+                        title="Delete Image"
+                      >
+                        <FaTrash size={8} /> Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
