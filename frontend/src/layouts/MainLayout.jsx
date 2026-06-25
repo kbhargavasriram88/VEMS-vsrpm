@@ -89,7 +89,7 @@ const MainLayout = () => {
 
       {/* Floating WhatsApp Widget */}
       <a 
-        href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`} 
+        href={`https://wa.me/${String(whatsappNumber || '').replace(/[^0-9]/g, '')}`} 
         target="_blank" 
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 bg-whatsappGreen text-white p-3 sm:p-4 rounded-full shadow-greenGlow hover:scale-110 transition-transform duration-300 cursor-pointer"
